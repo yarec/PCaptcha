@@ -1,3 +1,6 @@
+<?php
+
+namespace yarec\pcaptcha;
 
 class Captcha {
 
@@ -52,7 +55,7 @@ class Captcha {
        /**
         * @var string the TrueType font file. This can be either a file path or path alias.
         */
-       public $fontFile = 'SpicyRice.ttf';
+       public $fontFile = 'Font/SpicyRice.ttf';
        /**
         * @var string the fixed verification code. When this property is set,
         * [[getVerifyCode()]] will always return the value of this property.
@@ -61,22 +64,28 @@ class Captcha {
         * If not set, it means the verification code will be randomly generated.
         */
        public $fixedVerifyCode;
+
+       public $verifyCode;
    
        /**
         * Initializes the action.
         * @throws InvalidConfigException if the font file does not exist.
         */
-       public function init()
+       public function __construct()
        {
-           $this->fontFile = Yii::getAlias($this->fontFile);
+           $this->fontFile = dirname(__FILE__).'/'. $this->fontFile;
            if (!is_file($this->fontFile)) {
                throw new InvalidConfigException("The font file does not exist: {$this->fontFile}");
            }
        }   
 
        public function run(){
-               $this->setHttpHeaders();
-               return $this->renderImage($this->getVerifyCode());
+           $this->setHttpHeaders();
+           return $this->renderImage($this->getVerifyCode());
+       }
+
+       public function output(){
+           echo $this->renderImage($this->getVerifyCode());
        }
 
        /**
@@ -111,20 +120,14 @@ class Captcha {
         */
        public function getVerifyCode($regenerate = false)
        {
-            return $this->generateVerifyCode();
            if ($this->fixedVerifyCode !== null) {
                return $this->fixedVerifyCode;
            }
-   
-           $session = Yii::$app->getSession();
-           $session->open();
-           $name = $this->getSessionKey();
-           if ($session[$name] === null || $regenerate) {
-               $session[$name] = $this->generateVerifyCode();
-               $session[$name . 'count'] = 1;
+
+           if ($this->verifyCode=== null || $regenerate) {
+               $this->verifyCode= $this->generateVerifyCode();
            }
-   
-           return $session[$name];
+           return $this->verifyCode;
        }
 
        /** 
