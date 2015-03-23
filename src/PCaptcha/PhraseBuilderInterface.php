@@ -1,6 +1,6 @@
 <?php
 
-namespace Gregwar\Captcha;
+namespace PCaptcha;
 
 /**
  * Interface for the PhraseBuilder

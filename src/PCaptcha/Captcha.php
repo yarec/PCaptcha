@@ -1,6 +1,6 @@
 <?php
 
-namespace yarec\pcaptcha;
+namespace PCaptcha;
 
 class Captcha {
 
